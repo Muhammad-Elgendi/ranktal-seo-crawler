@@ -1,0 +1,272 @@
+package seocrawler.db.impl;
+
+import com.mchange.v2.c3p0.ComboPooledDataSource;
+import edu.uci.ics.crawler4j.crawler.Page;
+import edu.uci.ics.crawler4j.parser.HtmlParseData;
+import org.slf4j.Logger;
+import seocrawler.db.PostgresDBService;
+
+import java.beans.PropertyVetoException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class PostgresDBServiceImpl implements PostgresDBService {
+
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(PostgresDBServiceImpl.class);
+
+    private ComboPooledDataSource comboPooledDataSource;
+
+    private PreparedStatement insertKeyStatement,insertUrlStatement,insertTitleStatement,insertRedirectStatement,
+            insertRobotStatement,insertRefreshStatement,insertDescriptionStatement,insertContentStatement,
+            insertSimilarityStatement,getHashesStatement,removeSiteStatement,updateJobStatement;
+
+    public PostgresDBServiceImpl(String dbUrl, String dbUser, String dbPw, String driver) throws
+            PropertyVetoException, SQLException {
+        comboPooledDataSource = new ComboPooledDataSource();
+        comboPooledDataSource.setDriverClass(driver);
+        comboPooledDataSource.setJdbcUrl(dbUrl);
+        comboPooledDataSource.setUser(dbUser);
+        comboPooledDataSource.setPassword(dbPw);
+        comboPooledDataSource.setMaxPoolSize(7);
+        comboPooledDataSource.setMinPoolSize(7);
+        comboPooledDataSource.setInitialPoolSize(7);
+
+        init();
+    }
+
+    private void init() throws SQLException {
+
+        ///XXX should be done via DDL script
+//        comboPooledDataSource.getConnection().createStatement().executeUpdate(
+//                "CREATE SEQUENCE id_master_seq" +
+//                        "  INCREMENT 1" +
+//                        "  MINVALUE 1 " +
+//                        "  MAXVALUE 9223372036854775807" +
+//                        "  START 6 " +
+//                        "  CACHE 1;")
+//        ;
+//        comboPooledDataSource.getConnection().createStatement().executeUpdate(
+//                "CREATE TABLE webpage" +
+//                        " ( " +
+//                        "  id bigint NOT NULL," +
+//                        "  html TEXT," +
+//                        "  text TEXT," +
+//                        "  url varchar(4096)," +
+//                        "  seen timestamp without time zone NOT NULL," +
+//                        "  primary key (id)" +
+//                        ")");
+
+        insertKeyStatement = comboPooledDataSource.getConnection().prepareStatement("insert into webpage values " +
+                "(nextval('id_master_seq'),?,?,?,?)");
+
+
+        insertUrlStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into urls values " +
+                "(?,?,?)");
+
+        insertTitleStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into titles values " +
+                "(?,?)");
+
+        insertRedirectStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into redirects values " +
+                "(?,?)");
+
+        insertRobotStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into robots values " +
+                "(?,?,?)");
+
+        insertRefreshStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into refreshes values " +
+                "(?,?,?)");
+
+        insertDescriptionStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into descriptions values " +
+                "(?,?)");
+
+        insertContentStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into contents values " +
+                "(?,?,?,?,?,?)");
+
+        insertSimilarityStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into similarities values " +
+                "(?,?,?)");
+
+        getHashesStatement =  comboPooledDataSource.getConnection().prepareStatement("select url,content_hash from contents where url like ?");
+
+        removeSiteStatement =  comboPooledDataSource.getConnection().prepareStatement("delete from urls where url like ?");
+
+        updateJobStatement = comboPooledDataSource.getConnection().prepareStatement("update crawling_jobs set status = ? , finished_at = ? where site_id = ?");
+
+
+    }
+
+    @Override
+    public void store(Page page) {
+
+        if (page.getParseData() instanceof HtmlParseData) {
+            try {
+
+                HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
+
+                insertKeyStatement.setString(1, htmlParseData.getHtml());
+                insertKeyStatement.setString(2, htmlParseData.getText());
+                insertKeyStatement.setString(3, page.getWebURL().getURL());
+                insertKeyStatement.setTimestamp(4, new Timestamp(new java.util.Date().getTime()));
+                insertKeyStatement.executeUpdate();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while storing webpage for url'{}'", page.getWebURL().getURL(), e);
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        if (comboPooledDataSource != null) {
+            comboPooledDataSource.close();
+        }
+    }
+
+    @Override
+    public void storeUrl(String url,Integer status, Integer siteId) {
+        try {
+            insertUrlStatement.setString(1,url);
+            insertUrlStatement.setInt(2,status);
+            insertUrlStatement.setInt(3,siteId);
+            insertUrlStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing url", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeTitle(String url,String title) {
+        try {
+            insertTitleStatement.setString(1,url);
+            insertTitleStatement.setString(2,title);
+            insertTitleStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing title", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeRedirect(String url,String redirectTo) {
+        try {
+            insertRedirectStatement.setString(1,url);
+            insertRedirectStatement.setString(2,redirectTo);
+            insertRedirectStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing redirect", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeRobot(String url,String type,String content) {
+        try {
+            insertRobotStatement.setString(1,url);
+            insertRobotStatement.setString(2,type);
+            insertRobotStatement.setString(3,content);
+            insertRobotStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing robot", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeRefresh(String url,String type,String content) {
+        try {
+            insertRefreshStatement.setString(1,url);
+            insertRefreshStatement.setString(2,type);
+            insertRefreshStatement.setString(3,content);
+            insertRefreshStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing refresh", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeDescription(String url,String description) {
+        try {
+            insertDescriptionStatement.setString(1,url);
+            insertDescriptionStatement.setString(2,description);
+            insertDescriptionStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing description", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeContent(String url,Boolean isH1Exist,Boolean isCanonicalExist,String urlQuery,Integer contentLength ,String contentHash) {
+        try {
+            insertContentStatement.setString(1,url);
+            insertContentStatement.setBoolean(2,isH1Exist);
+            insertContentStatement.setBoolean(3,isCanonicalExist);
+            insertContentStatement.setString(4,urlQuery);
+            insertContentStatement.setInt(5,contentLength);
+            insertContentStatement.setString(6,contentHash);
+            insertContentStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing content", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void storeSimilarity(String srcUrl,String destUrl,Float percent) {
+        try {
+            insertSimilarityStatement.setString(1,srcUrl);
+            insertSimilarityStatement.setString(2,destUrl);
+            insertSimilarityStatement.setFloat(3,percent);
+            insertSimilarityStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing similarity", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Map<String,String> getHashes(String host) {
+        Map<String,String> hashes = new HashMap<String, String>();
+
+        try {
+            getHashesStatement.setString(1,"%"+host+"%");
+            ResultSet rs = getHashesStatement.executeQuery();
+            while (rs.next()) {
+                hashes.put(rs.getString("url"),rs.getString("content_hash"));
+            }
+        } catch (SQLException e) {
+            logger.error("SQL Exception while getting hashes", e);
+            throw new RuntimeException(e);
+        }
+        return hashes;
+    }
+
+    @Override
+    public void removeSite(String url) {
+        try {
+            removeSiteStatement.setString(1,"%"+url+"%");
+            removeSiteStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while removing old urls of the site", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void updateJob(String status,Timestamp finishTime,Integer siteId) {
+        try {
+            updateJobStatement.setString(1,status);
+            updateJobStatement.setTimestamp(2,finishTime);
+            updateJobStatement.setInt(3,siteId);
+            updateJobStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while update job", e);
+            throw new RuntimeException(e);
+        }
+    }
+}
