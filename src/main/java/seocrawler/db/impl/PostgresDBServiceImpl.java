@@ -32,9 +32,10 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         comboPooledDataSource.setJdbcUrl(dbUrl);
         comboPooledDataSource.setUser(dbUser);
         comboPooledDataSource.setPassword(dbPw);
-        comboPooledDataSource.setMaxPoolSize(7);
-        comboPooledDataSource.setMinPoolSize(7);
-        comboPooledDataSource.setInitialPoolSize(7);
+        comboPooledDataSource.setMaxConnectionAge(10);
+        comboPooledDataSource.setMaxPoolSize(20);
+//        comboPooledDataSource.setMinPoolSize(7);
+//        comboPooledDataSource.setInitialPoolSize(1);
 
         init();
     }
@@ -114,7 +115,22 @@ public class PostgresDBServiceImpl implements PostgresDBService {
             } catch (SQLException e) {
                 logger.error("SQL Exception while storing webpage for url'{}'", page.getWebURL().getURL(), e);
                 throw new RuntimeException(e);
+            }finally {
+//                if (insertKeyStatement != null) {
+//                    try {
+//                        insertKeyStatement.close();
+//                    } catch (SQLException e) {
+//                        logger.error("SQL Exception while closing insertKeyStatement'{}'", page.getWebURL().getURL(), e);
+//                    }
+//                }
+                try {
+                    if (insertKeyStatement.getConnection() != null)
+                        insertKeyStatement.getConnection().close();
+                } catch (SQLException e) {
+                    logger.error("SQL Exception while closing connection insertKeyStatement'{}'",e);
+                }
             }
+
         }
     }
 
@@ -135,6 +151,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing url", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertUrlStatement != null) {
+//                try {
+//                    insertUrlStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertUrlStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertUrlStatement.getConnection() != null)
+                    insertUrlStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertUrlStatement'{}'",e);
+            }
         }
     }
 
@@ -147,6 +177,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing title", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertTitleStatement != null) {
+//                try {
+//                    insertTitleStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertTitleStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertTitleStatement.getConnection() != null)
+                    insertTitleStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertTitleStatement'{}'",e);
+            }
         }
     }
 
@@ -159,6 +203,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing redirect", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertRedirectStatement != null) {
+//                try {
+//                    insertRedirectStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertRedirectStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertRedirectStatement.getConnection() != null)
+                    insertRedirectStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertRedirectStatement'{}'",e);
+            }
         }
     }
 
@@ -172,6 +230,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing robot", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertRobotStatement != null) {
+//                try {
+//                    insertRobotStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertRobotStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertRobotStatement.getConnection() != null)
+                    insertRobotStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertRobotStatement'{}'",e);
+            }
         }
     }
 
@@ -185,6 +257,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing refresh", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertRefreshStatement != null) {
+//                try {
+//                    insertRefreshStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertRefreshStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertRefreshStatement.getConnection() != null)
+                    insertRefreshStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertRefreshStatement'{}'",e);
+            }
         }
     }
 
@@ -197,6 +283,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing description", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertDescriptionStatement != null) {
+//                try {
+//                    insertDescriptionStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertDescriptionStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertDescriptionStatement.getConnection() != null)
+                    insertDescriptionStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertDescriptionStatement'{}'",e);
+            }
         }
     }
 
@@ -213,6 +313,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing content", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertContentStatement != null) {
+//                try {
+//                    insertContentStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertContentStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertContentStatement.getConnection() != null)
+                    insertContentStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertContentStatement'{}'",e);
+            }
         }
     }
 
@@ -226,6 +340,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while storing similarity", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (insertSimilarityStatement != null) {
+//                try {
+//                    insertSimilarityStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertSimilarityStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertSimilarityStatement.getConnection() != null)
+                    insertSimilarityStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertSimilarityStatement'{}'",e);
+            }
         }
     }
 
@@ -242,6 +370,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while getting hashes", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (getHashesStatement != null) {
+//                try {
+//                    getHashesStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing getHashesStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (getHashesStatement.getConnection() != null)
+                    getHashesStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection getHashesStatement'{}'",e);
+            }
         }
         return hashes;
     }
@@ -254,6 +396,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while removing old urls of the site", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (removeSiteStatement != null) {
+//                try {
+//                    removeSiteStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing removeSiteStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (removeSiteStatement.getConnection() != null)
+                    removeSiteStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection removeSiteStatement'{}'",e);
+            }
         }
     }
 
@@ -267,6 +423,20 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         } catch (SQLException e) {
             logger.error("SQL Exception while update job", e);
             throw new RuntimeException(e);
+        }finally {
+//            if (updateJobStatement != null) {
+//                try {
+//                    updateJobStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing updateJobStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (updateJobStatement.getConnection() != null)
+                    updateJobStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection updateJobStatement'{}'",e);
+            }
         }
     }
 }
