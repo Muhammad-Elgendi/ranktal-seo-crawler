@@ -13,7 +13,10 @@ WHERE pg_stat_activity.datname = 'TARGET_DB' -- ← change this to your DB
   AND pid <> pg_backend_pid();
   
 Current problems :-
-Unexpected error, URL: https://is.net.sa/%d8%ae%d8%af%d9%85%d8%a7%d8%aa%d9%86%d8%a7/%d8%a7%d9%84%d8%aa%d8%b3%d9%88%d9%8a%d9%82-%d8%b9%d9%84%d9%89-%d8%a7%d9%84%d8%a5%d9%86%d8%aa%d8%b1%d9%86%d8%aa/%d8%a7%d9%84%d8%aa%d8%b3%d9%88%d9%8a%d9%82-%d8%b9%d8%a8%d8%b1-%d9%88%d8%b3%d8%a7%d8%a6%d9%84-%d8%a7%d9%84%d8%aa%d9%88%d8%a7%d8%b5%d9%84-%d8%a7%d9%84%d8%a7%d8%ac%d8%aa%d9%85%d8%a7%d8%b9%d9%8a/?reviews-page=2
-is redirected to NOTHING
-Unexpected error, URL: https://is.net.sa/%d8%ae%d8%af%d9%85%d8%a7%d8%aa%d9%86%d8%a7/%d8%a7%d9%84%d8%aa%d8%b3%d9%88%d9%8a%d9%82-%d8%b9%d9%84%d9%89-%d8%a7%d9%84%d8%a5%d9%86%d8%aa%d8%b1%d9%86%d8%aa/%d8%a7%d9%84%d8%aa%d8%b3%d9%88%d9%8a%d9%82-%d8%b9%d8%a8%d8%b1-%d9%88%d8%b3%d8%a7%d8%a6%d9%84-%d8%a7%d9%84%d8%aa%d9%88%d8%a7%d8%b5%d9%84-%d8%a7%d9%84%d8%a7%d8%ac%d8%aa%d9%85%d8%a7%d8%b9%d9%8a/?reviews-page=2&amp
-is redirected to NOTHING
+
+Url decoding problem (accept arabic chars)
+https://is.net.sa/%d8%a3%d8%b9%d9%85%d8%a7%d9%84%d9%86%d8%a7-%d8%a7%d9%84%d9%85%d8%aa%d9%85%d9%8a%d8%b2%d8%a9/
+https://is.net.sa/%D8%A3%D8%B9%D9%85%D8%A7%D9%84%D9%86%D8%A7-%D8%A7%D9%84%D9%85%D8%AA%D9%85%D9%8A%D8%B2%D8%A9/
+
+https://is.net.sa/%d8%a3%d8%b9%d9%85%d8%a7%d9%84%d9%86%d8%a7-%d8%a7%d9%84%d9%85%d8%aa%d9%85%d9%8a%d8%b2%d8%a9/
+https://is.net.sa/%D8%A3%D8%B9%D9%85%D8%A7%D9%84%D9%86%D8%A7-%D8%A7%D9%84%D9%85%D8%AA%D9%85%D9%8A%D8%B2%D8%A9/
