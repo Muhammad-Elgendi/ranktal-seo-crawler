@@ -3,7 +3,6 @@ package seocrawler;
 
 import com.github.s3curitybug.similarityuniformfuzzyhash.UniformFuzzyHash;
 import com.github.s3curitybug.similarityuniformfuzzyhash.UniformFuzzyHashes;
-import com.mchange.v2.c3p0.ComboPooledDataSource;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -16,7 +15,6 @@ import seocrawler.crawler.PostgresCrawlerFactory;
 import seocrawler.crawler.Similarities;
 import seocrawler.db.PostgresDBService;
 import seocrawler.db.impl.PostgresDBServiceImpl;
-
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.Map;
