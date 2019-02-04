@@ -26,16 +26,18 @@ public class SampleLauncher {
     public static  String mainUrl;
     public static Integer userId;
     public static Integer siteId;
-
+    public static String matchPattern;
+    public static boolean exactMatch;
     public static void main(String[] args) throws Exception {
 
-//        if (args.length != 5) {
+//        if (args.length != 6) {
 //            logger.info("Needed parameters: ");
 //            logger.info("\t Seed URL (start crawling with this URL)");
 //            logger.info("\t maxPagesToFetch (number of pages to be fetched)");
 //            logger.info("\t nuberOfCrawlers (number of crawlers)");
 //            logger.info("\t user id (id of user that request the crawling)");
 //            logger.info("\t site id (id of site that being crawled)");
+//            logger.info("\t Exact match (Crawling Exact match url or the same host)");
 //            return;
 //        }
 
@@ -46,15 +48,22 @@ public class SampleLauncher {
 //        int numberOfCrawlers = Integer.valueOf(args[2]);
 //        userId = Integer.valueOf(args[3]);
 //        siteId = Integer.valueOf(args[4]);
+//        exactMatch = Boolean.valueOf(args[5]);
 
 
 
-        URL url = new URL("https://is.net.sa");
+
+
+        URL url = new URL("http://7loll.net");
         mainUrl= url.toString();
         userId = 1;
-        siteId = 3;
+        siteId = 1;
         int maxPages = 10000;
         int numberOfCrawlers = 4;
+        exactMatch = false;
+
+
+        matchPattern = exactMatch ? mainUrl : url.getHost();
 
         logger.info("Crawler Started : ");
         logger.info("\t Seed URL : "+mainUrl);
@@ -65,7 +74,7 @@ public class SampleLauncher {
 
         CrawlConfig config = new CrawlConfig();
 
-        config.setPolitenessDelay(100);
+        config.setPolitenessDelay(1000);
 
         config.setCrawlStorageFolder("/media/muhammad/disk/crawlerData/"+url.getHost());
 
@@ -128,7 +137,7 @@ public class SampleLauncher {
         /**
          * Inform backend
          */
-        notifyBackend(dotenv.get("JDBC_URL"),dotenv.get("DB_USER_NAME"),dotenv.get("DB_PASSWORD"),"org.postgresql.Driver","Finished",getCurrentTimeStamp());
+        notifyBackend(dotenv.get("JDBC_URL"),dotenv.get("DB_USER_NAME"),dotenv.get("DB_PASSWORD"),"org.postgresql.Driver","Finished", getCurrentTimeStamp());
 
 
         logger.info("The End");
@@ -151,10 +160,10 @@ public class SampleLauncher {
 
     private static void deleteAllUrls(String dbUrl, String dbUser, String dbPw, String driver) throws Exception{
         PostgresDBService postgresDBService = new PostgresDBServiceImpl(dbUrl,dbUser,dbPw,driver);
-        postgresDBService.removeSite(mainUrl);
+        postgresDBService.removeSite(matchPattern);
     }
 
-    private static java.sql.Timestamp getCurrentTimeStamp() {
+    public static java.sql.Timestamp getCurrentTimeStamp() {
 
         return new java.sql.Timestamp(new java.util.Date().getTime());
 

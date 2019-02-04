@@ -4,6 +4,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 import edu.uci.ics.crawler4j.crawler.Page;
 import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import org.slf4j.Logger;
+import seocrawler.SampleLauncher;
 import seocrawler.db.PostgresDBService;
 
 import java.beans.PropertyVetoException;
@@ -76,7 +77,7 @@ public class PostgresDBServiceImpl implements PostgresDBService {
                 insertKeyStatement.setString(1, htmlParseData.getHtml());
                 insertKeyStatement.setString(2, htmlParseData.getText());
                 insertKeyStatement.setString(3, page.getWebURL().getURL());
-                insertKeyStatement.setTimestamp(4, new Timestamp(new java.util.Date().getTime()));
+                insertKeyStatement.setTimestamp(4, SampleLauncher.getCurrentTimeStamp());
                 insertKeyStatement.executeUpdate();
             } catch (SQLException e) {
                 logger.error("SQL Exception while storing webpage for url'{}'", page.getWebURL().getURL(), e);
@@ -111,10 +112,11 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeUrl(String url,Integer status, Integer siteId) {
         try {
             insertUrlStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into urls values " +
-                    "(?,?,?)");
+                    "(?,?,?,?)");
             insertUrlStatement.setString(1,url);
             insertUrlStatement.setInt(2,status);
             insertUrlStatement.setInt(3,siteId);
+            insertUrlStatement.setTimestamp(4, SampleLauncher.getCurrentTimeStamp());
             insertUrlStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing url", e);
@@ -140,9 +142,10 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeTitle(String url,String title) {
         try {
             insertTitleStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into titles values " +
-                    "(?,?)");
+                    "(?,?,?)");
             insertTitleStatement.setString(1,url);
             insertTitleStatement.setString(2,title);
+            insertTitleStatement.setTimestamp(3,SampleLauncher.getCurrentTimeStamp());
             insertTitleStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing title", e);
@@ -169,9 +172,10 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         try {
 
             insertRedirectStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into redirects values " +
-                    "(?,?)");
+                    "(?,?,?)");
             insertRedirectStatement.setString(1,url);
             insertRedirectStatement.setString(2,redirectTo);
+            insertRedirectStatement.setTimestamp(3,SampleLauncher.getCurrentTimeStamp());
             insertRedirectStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing redirect", e);
@@ -197,10 +201,11 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeRobot(String url,String type,String content) {
         try {
             insertRobotStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into robots values " +
-                    "(?,?,?)");
+                    "(?,?,?,?)");
             insertRobotStatement.setString(1,url);
             insertRobotStatement.setString(2,type);
             insertRobotStatement.setString(3,content);
+            insertRobotStatement.setTimestamp(4,SampleLauncher.getCurrentTimeStamp());
             insertRobotStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing robot", e);
@@ -226,10 +231,11 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeRefresh(String url,String type,String content) {
         try {
             insertRefreshStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into refreshes values " +
-                    "(?,?,?)");
+                    "(?,?,?,?)");
             insertRefreshStatement.setString(1,url);
             insertRefreshStatement.setString(2,type);
             insertRefreshStatement.setString(3,content);
+            insertRefreshStatement.setTimestamp(4,SampleLauncher.getCurrentTimeStamp());
             insertRefreshStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing refresh", e);
@@ -255,9 +261,10 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeDescription(String url,String description) {
         try {
             insertDescriptionStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into descriptions values " +
-                    "(?,?)");
+                    "(?,?,?)");
             insertDescriptionStatement.setString(1,url);
             insertDescriptionStatement.setString(2,description);
+            insertDescriptionStatement.setTimestamp(3,SampleLauncher.getCurrentTimeStamp());
             insertDescriptionStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing description", e);
@@ -283,13 +290,14 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeContent(String url,Boolean isH1Exist,Boolean isCanonicalExist,String urlQuery,Integer contentLength ,String contentHash) {
         try {
             insertContentStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into contents values " +
-                    "(?,?,?,?,?,?)");
+                    "(?,?,?,?,?,?,?)");
             insertContentStatement.setString(1,url);
             insertContentStatement.setBoolean(2,isH1Exist);
             insertContentStatement.setBoolean(3,isCanonicalExist);
             insertContentStatement.setString(4,urlQuery);
             insertContentStatement.setInt(5,contentLength);
             insertContentStatement.setString(6,contentHash);
+            insertContentStatement.setTimestamp(7,SampleLauncher.getCurrentTimeStamp());
             insertContentStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing content", e);
@@ -315,10 +323,11 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     public void storeSimilarity(String srcUrl,String destUrl,Float percent) {
         try {
             insertSimilarityStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into similarities values " +
-                    "(?,?,?)");
+                    "(?,?,?,?)");
             insertSimilarityStatement.setString(1,srcUrl);
             insertSimilarityStatement.setString(2,destUrl);
             insertSimilarityStatement.setFloat(3,percent);
+            insertSimilarityStatement.setTimestamp(4,SampleLauncher.getCurrentTimeStamp());
             insertSimilarityStatement.executeUpdate();
         } catch (SQLException e) {
             logger.error("SQL Exception while storing similarity", e);
