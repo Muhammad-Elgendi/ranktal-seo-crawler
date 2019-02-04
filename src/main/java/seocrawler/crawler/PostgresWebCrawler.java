@@ -15,7 +15,6 @@ import seocrawler.db.PostgresDBService;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class PostgresWebCrawler extends WebCrawler {
@@ -137,9 +136,6 @@ public class PostgresWebCrawler extends WebCrawler {
         }
 
     }
-
-
-
 
     @Override
     public void visit(Page page) {

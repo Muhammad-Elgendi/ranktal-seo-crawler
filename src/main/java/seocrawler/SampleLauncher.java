@@ -28,7 +28,6 @@ public class SampleLauncher {
     public static  String mainUrl;
     public static Integer userId;
     public static Integer siteId;
-    int numberOfCrawlers = 7;
 
     public static void main(String[] args) throws Exception {
 
@@ -45,9 +44,11 @@ public class SampleLauncher {
         // Handle arguments
 //        URL url = new URL(args[0]);
 //        mainUrl= args[0];
+//        int maxPages = Integer.valueOf(args[1]);
+//        int numberOfCrawlers = Integer.valueOf(args[2]);
 //        userId = Integer.valueOf(args[3]);
 //        siteId = Integer.valueOf(args[4]);
-//        int numberOfCrawlers = Integer.valueOf(args[2]);
+
 
 
         URL url = new URL("https://is.net.sa");
@@ -55,14 +56,14 @@ public class SampleLauncher {
         userId = 1;
         siteId = 3;
         int maxPages = 10000;
-        int numberOfCrawlers = 7;
+        int numberOfCrawlers = 4;
 
-//        logger.info("Crawler Started : ");
-//        logger.info("\t Seed URL : "+mainUrl);
-//        logger.info("\t maxPagesToFetch : "+Integer.valueOf(args[1]));
-//        logger.info("\t nuberOfCrawlers : "+numberOfCrawlers);
-//        logger.info("\t user id : "+userId);
-//        logger.info("\t site id : "+siteId);
+        logger.info("Crawler Started : ");
+        logger.info("\t Seed URL : "+mainUrl);
+        logger.info("\t maxPagesToFetch : "+maxPages);
+        logger.info("\t nuberOfCrawlers : "+numberOfCrawlers);
+        logger.info("\t user id : "+userId);
+        logger.info("\t site id : "+siteId);
 
         CrawlConfig config = new CrawlConfig();
 
@@ -94,7 +95,6 @@ public class SampleLauncher {
          * URLs that are fetched and then the crawler starts following links
          * which are found in these pages
          */
-//        controller.addSeed(args[0]);
         controller.addSeed(mainUrl);
         Dotenv dotenv = Dotenv.configure().directory("./").load();
 

@@ -32,12 +32,12 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         comboPooledDataSource.setJdbcUrl(dbUrl);
         comboPooledDataSource.setUser(dbUser);
         comboPooledDataSource.setPassword(dbPw);
-        comboPooledDataSource.setMaxConnectionAge(10);
-        comboPooledDataSource.setMaxPoolSize(20);
+//        comboPooledDataSource.setMaxConnectionAge(10);
+        comboPooledDataSource.setMaxPoolSize(1);
 //        comboPooledDataSource.setMinPoolSize(7);
 //        comboPooledDataSource.setInitialPoolSize(1);
 
-        init();
+//        init();
     }
 
     private void init() throws SQLException {
@@ -61,42 +61,6 @@ public class PostgresDBServiceImpl implements PostgresDBService {
 //                        "  seen timestamp without time zone NOT NULL," +
 //                        "  primary key (id)" +
 //                        ")");
-
-        insertKeyStatement = comboPooledDataSource.getConnection().prepareStatement("insert into webpage values " +
-                "(nextval('id_master_seq'),?,?,?,?)");
-
-
-        insertUrlStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into urls values " +
-                "(?,?,?)");
-
-        insertTitleStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into titles values " +
-                "(?,?)");
-
-        insertRedirectStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into redirects values " +
-                "(?,?)");
-
-        insertRobotStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into robots values " +
-                "(?,?,?)");
-
-        insertRefreshStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into refreshes values " +
-                "(?,?,?)");
-
-        insertDescriptionStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into descriptions values " +
-                "(?,?)");
-
-        insertContentStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into contents values " +
-                "(?,?,?,?,?,?)");
-
-        insertSimilarityStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into similarities values " +
-                "(?,?,?)");
-
-        getHashesStatement =  comboPooledDataSource.getConnection().prepareStatement("select url,content_hash from contents where url like ?");
-
-        removeSiteStatement =  comboPooledDataSource.getConnection().prepareStatement("delete from urls where url like ?");
-
-        updateJobStatement = comboPooledDataSource.getConnection().prepareStatement("update crawling_jobs set status = ? , finished_at = ? where site_id = ?");
-
-
     }
 
     @Override
@@ -104,6 +68,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
 
         if (page.getParseData() instanceof HtmlParseData) {
             try {
+                insertKeyStatement = comboPooledDataSource.getConnection().prepareStatement("insert into webpage values " +
+                        "(nextval('id_master_seq'),?,?,?,?)");
 
                 HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
 
@@ -144,6 +110,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeUrl(String url,Integer status, Integer siteId) {
         try {
+            insertUrlStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into urls values " +
+                    "(?,?,?)");
             insertUrlStatement.setString(1,url);
             insertUrlStatement.setInt(2,status);
             insertUrlStatement.setInt(3,siteId);
@@ -171,6 +139,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeTitle(String url,String title) {
         try {
+            insertTitleStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into titles values " +
+                    "(?,?)");
             insertTitleStatement.setString(1,url);
             insertTitleStatement.setString(2,title);
             insertTitleStatement.executeUpdate();
@@ -197,6 +167,9 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeRedirect(String url,String redirectTo) {
         try {
+
+            insertRedirectStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into redirects values " +
+                    "(?,?)");
             insertRedirectStatement.setString(1,url);
             insertRedirectStatement.setString(2,redirectTo);
             insertRedirectStatement.executeUpdate();
@@ -223,6 +196,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeRobot(String url,String type,String content) {
         try {
+            insertRobotStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into robots values " +
+                    "(?,?,?)");
             insertRobotStatement.setString(1,url);
             insertRobotStatement.setString(2,type);
             insertRobotStatement.setString(3,content);
@@ -250,6 +225,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeRefresh(String url,String type,String content) {
         try {
+            insertRefreshStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into refreshes values " +
+                    "(?,?,?)");
             insertRefreshStatement.setString(1,url);
             insertRefreshStatement.setString(2,type);
             insertRefreshStatement.setString(3,content);
@@ -277,6 +254,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeDescription(String url,String description) {
         try {
+            insertDescriptionStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into descriptions values " +
+                    "(?,?)");
             insertDescriptionStatement.setString(1,url);
             insertDescriptionStatement.setString(2,description);
             insertDescriptionStatement.executeUpdate();
@@ -303,6 +282,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeContent(String url,Boolean isH1Exist,Boolean isCanonicalExist,String urlQuery,Integer contentLength ,String contentHash) {
         try {
+            insertContentStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into contents values " +
+                    "(?,?,?,?,?,?)");
             insertContentStatement.setString(1,url);
             insertContentStatement.setBoolean(2,isH1Exist);
             insertContentStatement.setBoolean(3,isCanonicalExist);
@@ -333,6 +314,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void storeSimilarity(String srcUrl,String destUrl,Float percent) {
         try {
+            insertSimilarityStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into similarities values " +
+                    "(?,?,?)");
             insertSimilarityStatement.setString(1,srcUrl);
             insertSimilarityStatement.setString(2,destUrl);
             insertSimilarityStatement.setFloat(3,percent);
@@ -362,6 +345,7 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         Map<String,String> hashes = new HashMap<String, String>();
 
         try {
+            getHashesStatement =  comboPooledDataSource.getConnection().prepareStatement("select url,content_hash from contents where url like ?");
             getHashesStatement.setString(1,"%"+host+"%");
             ResultSet rs = getHashesStatement.executeQuery();
             while (rs.next()) {
@@ -391,6 +375,7 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void removeSite(String url) {
         try {
+            removeSiteStatement =  comboPooledDataSource.getConnection().prepareStatement("delete from urls where url like ?");
             removeSiteStatement.setString(1,"%"+url+"%");
             removeSiteStatement.executeUpdate();
         } catch (SQLException e) {
@@ -416,6 +401,7 @@ public class PostgresDBServiceImpl implements PostgresDBService {
     @Override
     public void updateJob(String status,Timestamp finishTime,Integer siteId) {
         try {
+            updateJobStatement = comboPooledDataSource.getConnection().prepareStatement("update crawling_jobs set status = ? , finished_at = ? where site_id = ?");
             updateJobStatement.setString(1,status);
             updateJobStatement.setTimestamp(2,finishTime);
             updateJobStatement.setInt(3,siteId);
