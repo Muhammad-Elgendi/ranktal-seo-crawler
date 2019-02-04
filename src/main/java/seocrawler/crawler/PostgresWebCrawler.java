@@ -449,7 +449,9 @@ public class PostgresWebCrawler extends WebCrawler {
 
             try {
                 URL url = new URL(page.getWebURL().getURL());
-                urlQuery = url.getQuery();
+                if(url.getQuery() != null) {
+                    urlQuery = url.getQuery();
+                }
             } catch (MalformedURLException ex) {
                 logger.error("Parsing URL failed", ex);
             }
