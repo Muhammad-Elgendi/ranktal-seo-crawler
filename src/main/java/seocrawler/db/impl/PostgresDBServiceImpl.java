@@ -6,8 +6,6 @@ import edu.uci.ics.crawler4j.parser.HtmlParseData;
 import org.slf4j.Logger;
 import seocrawler.SampleLauncher;
 import seocrawler.db.PostgresDBService;
-
-import java.beans.PropertyVetoException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,18 +25,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
             insertSimilarityStatement,getHashesStatement,removeSiteStatement,updateJobStatement,
             removeBacklinkStatement,insertBacklinkStatement;
 
-    public PostgresDBServiceImpl(String dbUrl, String dbUser, String dbPw, String driver) throws
-            PropertyVetoException, SQLException {
-        comboPooledDataSource = new ComboPooledDataSource();
-        comboPooledDataSource.setDriverClass(driver);
-        comboPooledDataSource.setJdbcUrl(dbUrl);
-        comboPooledDataSource.setUser(dbUser);
-        comboPooledDataSource.setPassword(dbPw);
-//        comboPooledDataSource.setMaxConnectionAge(10);
-        comboPooledDataSource.setMaxPoolSize(1);
-//        comboPooledDataSource.setMinPoolSize(7);
-//        comboPooledDataSource.setInitialPoolSize(1);
-
+    public PostgresDBServiceImpl(ComboPooledDataSource comboPooledDataSource) throws SQLException {
+        this.comboPooledDataSource = comboPooledDataSource;
 //        init();
     }
 

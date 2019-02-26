@@ -3,6 +3,7 @@ package seocrawler;
 
 import com.github.s3curitybug.similarityuniformfuzzyhash.UniformFuzzyHash;
 import com.github.s3curitybug.similarityuniformfuzzyhash.UniformFuzzyHashes;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
@@ -99,13 +100,21 @@ public class SampleLauncher {
          * which are found in these pages
          */
         controller.addSeed(mainUrl);
+
         Dotenv dotenv = Dotenv.configure().directory("./").load();
+
+        ComboPooledDataSource comboPooledDataSource = new ComboPooledDataSource();
+        comboPooledDataSource.setDriverClass("org.postgresql.Driver");
+        comboPooledDataSource.setJdbcUrl(dotenv.get("JDBC_URL"));
+        comboPooledDataSource.setUser(dotenv.get("DB_USER_NAME"));
+        comboPooledDataSource.setPassword(dotenv.get("DB_PASSWORD"));
+        comboPooledDataSource.setMaxPoolSize(numberOfCrawlers);
 
         logger.info("Delete Old URLS ... ");
         /**
          * Delete all old urls
          */
-        deleteAllUrls(dotenv.get("JDBC_URL"),dotenv.get("DB_USER_NAME"),dotenv.get("DB_PASSWORD"),"org.postgresql.Driver");
+        deleteAllUrls(comboPooledDataSource);
 
         logger.info("Starting Crawling Process ... ");
 
@@ -114,7 +123,7 @@ public class SampleLauncher {
          * will reach the line after this only when crawling is finished.
          */
 
-        controller.start(new PostgresCrawlerFactory(dotenv.get("JDBC_URL"),dotenv.get("DB_USER_NAME"),dotenv.get("DB_PASSWORD")), numberOfCrawlers);
+        controller.start(new PostgresCrawlerFactory(comboPooledDataSource), numberOfCrawlers);
 
 
         logger.info("Crawling Process Has Finished ... ");
@@ -125,7 +134,7 @@ public class SampleLauncher {
         /**
          * Check Duplicate Content and Store Similarities
          */
-        checkForDuplicateContent(dotenv.get("JDBC_URL"),dotenv.get("DB_USER_NAME"),dotenv.get("DB_PASSWORD"),"org.postgresql.Driver");
+        checkForDuplicateContent(comboPooledDataSource);
 
 
         logger.info("Inform backend Process Has Started ... ");
@@ -133,29 +142,29 @@ public class SampleLauncher {
         /**
          * Inform backend
          */
-        notifyBackend(dotenv.get("JDBC_URL"),dotenv.get("DB_USER_NAME"),dotenv.get("DB_PASSWORD"),"org.postgresql.Driver","Finished", getCurrentTimeStamp());
+        notifyBackend(comboPooledDataSource,"Finished", getCurrentTimeStamp());
 
 
         logger.info("The End");
     }
 
 
-    private static void checkForDuplicateContent(String dbUrl, String dbUser, String dbPw, String driver) throws Exception{
-        PostgresDBService postgresDBService = new PostgresDBServiceImpl(dbUrl,dbUser,dbPw,driver);
+    private static void checkForDuplicateContent(ComboPooledDataSource comboPooledDataSource) throws Exception{
+        PostgresDBService postgresDBService = new PostgresDBServiceImpl(comboPooledDataSource);
         Map<String,String> hashesStrings = postgresDBService.getHashes(mainUrl);
         Map<String, UniformFuzzyHash>  map = UniformFuzzyHashes.computeHashesFromStrings(hashesStrings,61);
         Map similarities= UniformFuzzyHashes.computeAllHashesSimilarities(map);
         Similarities.saveAllHashesSimilarities(similarities,postgresDBService);
     }
 
-    private static void notifyBackend(String dbUrl, String dbUser, String dbPw, String driver, String status, Timestamp finishTime) throws Exception{
-        PostgresDBService postgresDBService = new PostgresDBServiceImpl(dbUrl,dbUser,dbPw,driver);
+    private static void notifyBackend(ComboPooledDataSource comboPooledDataSource, String status, Timestamp finishTime) throws Exception{
+        PostgresDBService postgresDBService = new PostgresDBServiceImpl(comboPooledDataSource);
         postgresDBService.updateJob(status,finishTime,siteId);
     }
 
 
-    private static void deleteAllUrls(String dbUrl, String dbUser, String dbPw, String driver) throws Exception{
-        PostgresDBService postgresDBService = new PostgresDBServiceImpl(dbUrl,dbUser,dbPw,driver);
+    private static void deleteAllUrls(ComboPooledDataSource comboPooledDataSource) throws Exception{
+        PostgresDBService postgresDBService = new PostgresDBServiceImpl(comboPooledDataSource);
         postgresDBService.removeSite(matchPattern);
     }
 
