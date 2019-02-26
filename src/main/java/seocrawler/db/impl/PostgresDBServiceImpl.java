@@ -24,7 +24,8 @@ public class PostgresDBServiceImpl implements PostgresDBService {
 
     private PreparedStatement insertKeyStatement,insertUrlStatement,insertTitleStatement,insertRedirectStatement,
             insertRobotStatement,insertRefreshStatement,insertDescriptionStatement,insertContentStatement,
-            insertSimilarityStatement,getHashesStatement,removeSiteStatement,updateJobStatement;
+            insertSimilarityStatement,getHashesStatement,removeSiteStatement,updateJobStatement,
+            removeBacklinkStatement,insertBacklinkStatement;
 
     public PostgresDBServiceImpl(String dbUrl, String dbUser, String dbPw, String driver) throws
             PropertyVetoException, SQLException {
@@ -345,6 +346,63 @@ public class PostgresDBServiceImpl implements PostgresDBService {
                     insertSimilarityStatement.getConnection().close();
             } catch (SQLException e) {
                 logger.error("SQL Exception while closing connection insertSimilarityStatement'{}'",e);
+            }
+        }
+    }
+
+    @Override
+    public void storeBacklink(String srcUrl,String targetUrl,String anchor,Boolean isDofollow) {
+        try {
+            insertBacklinkStatement =  comboPooledDataSource.getConnection().prepareStatement("insert into backlinks values " +
+                    "(?,?,?,?,?)");
+            insertBacklinkStatement.setString(1,srcUrl);
+            insertBacklinkStatement.setString(2,targetUrl);
+            insertBacklinkStatement.setString(3,anchor);
+            insertBacklinkStatement.setBoolean(4,isDofollow);
+            insertBacklinkStatement.setTimestamp(5,SampleLauncher.getCurrentTimeStamp());
+            insertBacklinkStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while storing backlink", e);
+            throw new RuntimeException(e);
+        }finally {
+//            if (insertBacklinkStatement != null) {
+//                try {
+//                    insertBacklinkStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing insertBacklinkStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (insertBacklinkStatement.getConnection() != null)
+                    insertBacklinkStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection insertBacklinkStatement'{}'",e);
+            }
+        }
+    }
+
+    @Override
+    public void removeBacklink(String url) {
+        try {
+            removeBacklinkStatement =  comboPooledDataSource.getConnection().prepareStatement("delete from backlinks where source_url = ?");
+            removeBacklinkStatement.setString(1,url);
+            removeBacklinkStatement.executeUpdate();
+        } catch (SQLException e) {
+            logger.error("SQL Exception while removing old backlinks", e);
+            throw new RuntimeException(e);
+        }finally {
+//            if (removeBacklinkStatement != null) {
+//                try {
+//                    removeBacklinkStatement.close();
+//                } catch (SQLException e) {
+//                    logger.error("SQL Exception while closing removeBacklinkStatement'{}'", e);
+//                }
+//            }
+            try {
+                if (removeBacklinkStatement.getConnection() != null)
+                    removeBacklinkStatement.getConnection().close();
+            } catch (SQLException e) {
+                logger.error("SQL Exception while closing connection removeBacklinkStatement'{}'",e);
             }
         }
     }

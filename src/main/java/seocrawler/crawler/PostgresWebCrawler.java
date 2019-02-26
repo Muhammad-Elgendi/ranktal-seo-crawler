@@ -520,11 +520,51 @@ public class PostgresWebCrawler extends WebCrawler {
                 logger.error("Storing content failed", e);
             }
 
+
+            // remove old backlinks
+            try {
+                postgresDBService.removeBacklink(url);
+            } catch (RuntimeException e) {
+                logger.error("Removing backlinks failed", e);
+            }
+
+            // Get Outbound links
+            Elements links = doc.select("a[href]");
+            // is this link external
+            boolean isExternal;
+            WebURL myUrl = new WebURL();
+            for (Element link : links) {
+
+                if(SampleLauncher.exactMatch) {
+                    isExternal = !link.attr("abs:href").toLowerCase().startsWith(SampleLauncher.matchPattern);
+                }else {
+                    myUrl.setURL(link.attr("abs:href").toLowerCase());
+                    isExternal = !myUrl.getDomain().equalsIgnoreCase(SampleLauncher.matchPattern);
+                }
+                if (isExternal){
+                    // decode url
+                    String backlink = link.attr("abs:href").toLowerCase();
+                    try {
+                        backlink = URLDecoder.decode(link.attr("abs:href").toLowerCase(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        backlink = link.attr("abs:href").toLowerCase();
+                        logger.error("Decoding backlink in visit() failed", e);
+                    }
+
+                    boolean isDoFollow = !link.attr("rel").contains("nofollow");
+
+                    // store new backlinks
+                    try {
+                        postgresDBService.storeBacklink(url,backlink,link.html(),isDoFollow);
+                    } catch (RuntimeException e) {
+                        logger.error("Storing backlinks failed", e);
+                    }
+                }
+            }
+
             // Slow Load Time Problem
             // Search how to get load time of the page into visit()
-            //duplicate content problem > 92%
-            //duplicate titles problem
-            // Redirect chain
+
 
 //                try {
 //                    postgresDBService.store(page);
@@ -536,6 +576,7 @@ public class PostgresWebCrawler extends WebCrawler {
 //                // print problems map
 //                JSONObject json = new JSONObject(problems);
 //                System.out.printf("JSON: %s", json.toString());
+
         }
     }
 
@@ -544,4 +585,5 @@ public class PostgresWebCrawler extends WebCrawler {
             postgresDBService.close();
         }
     }
+
 }

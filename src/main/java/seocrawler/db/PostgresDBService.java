@@ -17,6 +17,8 @@ public interface PostgresDBService {
     void storeDescription(String url,String description);
     void storeContent(String url,Boolean isH1Exist,Boolean isCanonicalExist,String urlQuery,Integer contentLength,String contentHash);
     void storeSimilarity(String srcUrl,String destUrl,Float percent);
+    void storeBacklink(String srcUrl,String targetUrl,String anchor_text,Boolean is_dofollow);
+    void removeBacklink(String url);
     Map<String,String> getHashes(String host);
     void updateJob(String status, Timestamp finishTime, Integer siteId);
     void removeSite(String url);

@@ -50,10 +50,6 @@ public class SampleLauncher {
 //        siteId = Integer.valueOf(args[4]);
 //        exactMatch = Boolean.valueOf(args[5]);
 
-
-
-
-
         URL url = new URL("http://7loll.net");
         mainUrl= url.toString();
         userId = 1;
@@ -168,6 +164,5 @@ public class SampleLauncher {
         return new java.sql.Timestamp(new java.util.Date().getTime());
 
     }
-
 
 }
