@@ -66,13 +66,18 @@ public class PostgresWebCrawler extends WebCrawler {
 //        problems.put("status3xx", status3xx);
 
         // decode Url
-        String url = page.getWebURL().getURL();
+        String url;
 
         try {
             url = URLDecoder.decode(page.getWebURL().getURL(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             url = page.getWebURL().getURL();
             logger.error("Decoding url in onRedirectedStatusCode() failed", e);
+        }
+
+        // remove trailing slash
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
         }
 
         // store url
@@ -144,12 +149,17 @@ public class PostgresWebCrawler extends WebCrawler {
 //        System.out.printf("JSON: %s", json.toString());
 
         // decode url
-        String url = urlStr;
+        String url ;
         try {
             url = URLDecoder.decode(urlStr, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             url = urlStr;
             logger.error("Decoding url in onUnexpectedStatusCode() failed", e);
+        }
+
+        // remove trailing slash
+        if (url.endsWith("/")) {
+            url = url.substring(0, url.length() - 1);
         }
 
         // store url
@@ -169,12 +179,17 @@ public class PostgresWebCrawler extends WebCrawler {
 //                problems.put("pageUrl", page.getWebURL().getURL());
 
             // decode url
-            String url = page.getWebURL().getURL();
+            String url;
             try {
                 url = URLDecoder.decode(page.getWebURL().getURL(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 url = page.getWebURL().getURL();
                 logger.error("Decoding url in visit() failed", e);
+            }
+
+            // remove trailing slash
+            if (url.endsWith("/")) {
+                url = url.substring(0, url.length() - 1);
             }
 
             // store url
@@ -532,24 +547,38 @@ public class PostgresWebCrawler extends WebCrawler {
             Elements links = doc.select("a[href]");
             // is this link external
             boolean isExternal;
-            WebURL myUrl = new WebURL();
-            for (Element link : links) {
 
-                if(SampleLauncher.exactMatch) {
-                    isExternal = !link.attr("abs:href").toLowerCase().startsWith(SampleLauncher.matchPattern);
-                }else {
-                    myUrl.setURL(link.attr("abs:href").toLowerCase());
-                    isExternal = !myUrl.getDomain().equalsIgnoreCase(SampleLauncher.matchPattern);
-                }
+            for (Element link : links) {
+                isExternal = !link.attr("abs:href").isEmpty() && !link.attr("abs:href").contains(page.getWebURL().getSubDomain()+page.getWebURL().getDomain());
+
+//                if(SampleLauncher.exactMatch) {
+//                    isExternal = !link.attr("abs:href").toLowerCase().startsWith(SampleLauncher.matchPattern);
+//                }else {
+//                    URL myUrl = null;
+//                    try {
+//                        myUrl = new URL(link.attr("abs:href").toLowerCase());
+//                    } catch (MalformedURLException e) {
+//                        logger.error("Wrong backlink format", e);
+//                    }
+//                    isExternal = myUrl != null ? !myUrl.getHost().equalsIgnoreCase(SampleLauncher.matchPattern) : false;
+//                }
                 if (isExternal){
                     // decode url
-                    String backlink = link.attr("abs:href").toLowerCase();
+                    String backlink;
                     try {
                         backlink = URLDecoder.decode(link.attr("abs:href").toLowerCase(), "UTF-8");
+                        if (backlink.endsWith("/")) {
+                            backlink = backlink.substring(0, backlink.length() - 1);
+                        }
                     } catch (UnsupportedEncodingException e) {
                         backlink = link.attr("abs:href").toLowerCase();
+                        if (backlink.endsWith("/")) {
+                            backlink = backlink.substring(0, backlink.length() - 1);
+                        }
                         logger.error("Decoding backlink in visit() failed", e);
                     }
+
+
 
                     boolean isDoFollow = !link.attr("rel").contains("nofollow");
 
@@ -580,10 +609,15 @@ public class PostgresWebCrawler extends WebCrawler {
         }
     }
 
-    public void onBeforeExit() {
-        if (postgresDBService != null) {
-            postgresDBService.close();
-        }
-    }
+    /**
+     * This function is called just before the termination of the current
+     * crawler instance. It can be used for persisting in-memory data or other
+     * finalization tasks.
+     */
+//    public void onBeforeExit() {
+//        if (postgresDBService != null) {
+//            postgresDBService.close();
+//        }
+//    }
 
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface PostgresDBService {
     void store(Page webPage);
-    void close();
+//    void close();
 
     void storeUrl(String url,Integer status, Integer siteId);
     void storeTitle(String url,String title);

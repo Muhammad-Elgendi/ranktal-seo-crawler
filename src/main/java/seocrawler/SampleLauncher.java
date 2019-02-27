@@ -31,33 +31,33 @@ public class SampleLauncher {
     public static boolean exactMatch;
     public static void main(String[] args) throws Exception {
 
-//        if (args.length != 6) {
-//            logger.info("Needed parameters: ");
-//            logger.info("\t Seed URL (start crawling with this URL)");
-//            logger.info("\t maxPagesToFetch (number of pages to be fetched)");
-//            logger.info("\t nuberOfCrawlers (number of crawlers)");
-//            logger.info("\t user id (id of user that request the crawling)");
-//            logger.info("\t site id (id of site that being crawled)");
-//            logger.info("\t Exact match (Crawling Exact match url or the same host)");
-//            return;
-//        }
+        if (args.length != 6) {
+            logger.info("Needed parameters: ");
+            logger.info("\t Seed URL (start crawling with this URL)");
+            logger.info("\t maxPagesToFetch (number of pages to be fetched)");
+            logger.info("\t nuberOfCrawlers (number of crawlers)");
+            logger.info("\t user id (id of user that request the crawling)");
+            logger.info("\t site id (id of site that being crawled)");
+            logger.info("\t Exact match (Crawling Exact match url or the same host)");
+            return;
+        }
 
         // Handle arguments
-//        URL url = new URL(args[0]);
-//        mainUrl= args[0];
-//        int maxPages = Integer.valueOf(args[1]);
-//        int numberOfCrawlers = Integer.valueOf(args[2]);
-//        userId = Integer.valueOf(args[3]);
-//        siteId = Integer.valueOf(args[4]);
-//        exactMatch = Boolean.valueOf(args[5]);
+        URL url = new URL(args[0]);
+        mainUrl= args[0];
+        int maxPages = Integer.valueOf(args[1]);
+        int numberOfCrawlers = Integer.valueOf(args[2]);
+        userId = Integer.valueOf(args[3]);
+        siteId = Integer.valueOf(args[4]);
+        exactMatch = Boolean.valueOf(args[5]);
 
-        URL url = new URL("http://7loll.net");
-        mainUrl= url.toString();
-        userId = 1;
-        siteId = 1;
-        int maxPages = 10000;
-        int numberOfCrawlers = 4;
-        exactMatch = false;
+//        URL url = new URL("http://7loll.net");
+//        mainUrl= url.toString();
+//        userId = 1;
+//        siteId = 2;
+//        int maxPages = 10000;
+//        int numberOfCrawlers = 4;
+//        exactMatch = false;
 
 
         matchPattern = exactMatch ? mainUrl : url.getHost();
@@ -71,7 +71,7 @@ public class SampleLauncher {
 
         CrawlConfig config = new CrawlConfig();
 
-        config.setPolitenessDelay(1000);
+        config.setPolitenessDelay(200);
 
         config.setCrawlStorageFolder("/media/muhammad/disk/crawlerData/"+url.getHost());
 
@@ -109,6 +109,7 @@ public class SampleLauncher {
         comboPooledDataSource.setUser(dotenv.get("DB_USER_NAME"));
         comboPooledDataSource.setPassword(dotenv.get("DB_PASSWORD"));
         comboPooledDataSource.setMaxPoolSize(numberOfCrawlers);
+        comboPooledDataSource.setMinPoolSize(numberOfCrawlers);
 
         logger.info("Delete Old URLS ... ");
         /**
@@ -144,6 +145,9 @@ public class SampleLauncher {
          */
         notifyBackend(comboPooledDataSource,"Finished", getCurrentTimeStamp());
 
+        logger.info("Closing pool ... ");
+
+        comboPooledDataSource.close();
 
         logger.info("The End");
     }

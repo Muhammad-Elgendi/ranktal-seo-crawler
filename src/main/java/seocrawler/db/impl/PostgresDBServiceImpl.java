@@ -90,12 +90,12 @@ public class PostgresDBServiceImpl implements PostgresDBService {
         }
     }
 
-    @Override
-    public void close() {
-        if (comboPooledDataSource != null) {
-            comboPooledDataSource.close();
-        }
-    }
+//    @Override
+//    public void close() {
+//        if (comboPooledDataSource != null) {
+//            comboPooledDataSource.close();
+//        }
+//    }
 
     @Override
     public void storeUrl(String url,Integer status, Integer siteId) {
