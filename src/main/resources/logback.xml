@@ -4,7 +4,7 @@
 
 
     <!-- THIS IS OUR CUSTOM CONTEXT LISTENER -->
-    <contextListener class="seocrawler.crawler.LoggerStartupListener"/>
+    <!--<contextListener class="backlinkscrawler.crawler.LoggerStartupListener"/>-->
 
     <!--<property name="LOG_HOME" value="target/logs" />-->
     <!--<property name="LOG_FILE_NAME" value="/crawler4j.log" />-->

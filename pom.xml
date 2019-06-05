@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>seo</groupId>
-    <artifactId>SEO-crawler</artifactId>
+    <artifactId>Backlinks-crawler</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
         <plugins>
@@ -14,8 +14,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>6</source>
-                    <target>6</target>
+                    <source>7</source>
+                    <target>7</target>
                 </configuration>
             </plugin>
 
@@ -24,7 +24,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>seocrawler.SampleLauncher</mainClass>
+                            <mainClass>backlinkscrawler.SampleLauncher</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -47,11 +47,11 @@
 
     <dependencies>
 
-        <dependency>
-            <groupId>edu.uci.ics</groupId>
-            <artifactId>crawler4j</artifactId>
-            <version>4.4.0</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>edu.uci.ics</groupId>-->
+            <!--<artifactId>crawler4j</artifactId>-->
+            <!--<version>4.4.0</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -106,6 +106,46 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
+        </dependency>
+
+
+        <!-- Compile time Dependencies -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.10</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>uk.org.lidalia</groupId>
+            <artifactId>lidalia-slf4j-ext</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>ch.qos.logback</groupId>-->
+            <!--<artifactId>logback-classic</artifactId>-->
+            <!--<version>1.1.2</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.4</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>1.5</version>
         </dependency>
 
     </dependencies>

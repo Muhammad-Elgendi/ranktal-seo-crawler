@@ -1,8 +1,8 @@
-package seocrawler.crawler;
+package backlinkscrawler.crawler;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
-import seocrawler.db.impl.PostgresDBServiceImpl;
+import backlinkscrawler.db.impl.PostgresDBServiceImpl;
 
 public class PostgresCrawlerFactory implements CrawlController.WebCrawlerFactory<PostgresWebCrawler> {
 
